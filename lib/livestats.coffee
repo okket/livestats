@@ -52,18 +52,29 @@ LiveStats.prototype.createHTTPServer = ->
 
 LiveStats.prototype.ipToPosition = (ip, callback) ->
   self = @
-  client = http.createClient self.settings.geoipServer.port,
-                             self.settings.geoipServer.hostname
-  console.log 'ip: ' + ip
-  request = client.request 'GET', '/geoip/api/locate.json?ip=' + ip, 'host': self.settings.geoipServer.hostname
-  request.addListener 'response', (response) -> 
+
+  options = 
+    host: self.settings.geoipServer.hostname
+    port: self.settings.geoipServer.port
+    path: '/geoip/api/locate.json?ip=' + ip
+    method: 'GET'
+
+#  console.log 'request: GET http://' + self.settings.geoipServer.hostname + ':' + self.settings.geoipServer.port + '/geoip/api/locate.json?ip=' + ip
+
+  request = http.request options, (response) ->
     response.setEncoding 'utf8'
+#    console.log 'encoding: utf8'
     body = ''
-    response.addListener 'data', (chunk) ->
+    response.on 'data', (chunk) ->
+#      console.log 'received data'
       body += chunk
-    response.addListener 'end', ->
+    response.on 'end', ->
+#      console.log 'parsing JSON'
       json = JSON.parse body
       if json.latitude and json.longitude
+#        console.log 'lat: ' + json.latitude + ' long: ' + json.longitude + ' city: ' + json.city
         callback json.latitude, json.longitude, json.city
+
+  request.end()
 
 module.exports = LiveStats
