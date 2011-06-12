@@ -74,21 +74,21 @@ LiveStatsClient = ->
     person = self.map.path personPath
     person.scale 0.01, 0.01
     person.translate -255, -255 # Reset location to 0,0
-    person.translate x, y 
-    person.attr 
-      fill: '#ff9',
+    person.translate x, y
+    person.attr
+      fill: '#ff9'
       stroke: 'transparent'
 
     title = self.map.text x, y + 11, text
     title.attr
-      fill: 'white',
-      "font-size": 10,
-      "font-family": "'Helvetica Neue', 'Helvetica', sans-serif",
+      fill: 'white'
+      "font-size": 10
+      "font-family": "'Helvetica Neue', 'Helvetica', sans-serif"
       'font-weight': 'bold'
     subtitle = self.map.text x, y + 21, city
     subtitle.attr
-      fill: '#999',
-      "font-size": 7,
+      fill: '#999'
+      "font-size": 7
       "font-family": "'Helvetica Neue', 'Helvetica', sans-serif"
 
     hoverFunc = ->

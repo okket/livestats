@@ -33,7 +33,7 @@ LiveStats.prototype.createHTTPServer = ->
   self = @
   server = http.createServer (request, response) ->
     file = new nodeStatic.Server './public', cache: false
-    request.addListener 'end', ->
+    request.on 'end', ->
       location = url.parse request.url, true
       params   = location.query or request.headers
       if location.pathname is '/config.json' and request.method is 'GET'
@@ -43,7 +43,12 @@ LiveStats.prototype.createHTTPServer = ->
         response.end()
       else if location.pathname is '/stat' and request.method is 'GET'
         self.ipToPosition params.ip, (latitude, longitude, city) ->
-          self.bayeux.getClient().publish '/stat', title: params.title, latitude: latitude, longitude: longitude, city: city, ip: params.ip
+          self.bayeux.getClient().publish '/stat',
+            title: params.title,
+            latitude: latitude,
+            longitude: longitude,
+            city: city,
+            ip: params.ip
         response.writeHead '200', 'content-Type': 'text/plain'
         response.write 'OK'
         response.end()
