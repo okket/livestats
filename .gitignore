@@ -1,2 +1,3 @@
 server.js
 lib/livestats.js
+public/js/jquery.livestats.js
