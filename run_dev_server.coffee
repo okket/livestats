@@ -47,7 +47,7 @@ dev_server =
     "unwatchFiles": ->
         @.files.forEach (file) ->
             fs.unwatchFile file 
-        this.files = [];
+        @.files = [];
 
 dev_server.start()
 
