@@ -1,43 +1,38 @@
-LiveStatsClient = -> 
-  return new arguments.callee arguments if ! this instanceof arguments.callee
+class LiveStatsClient
+#  return new arguments.callee arguments if ! this instanceof arguments.callee
 
-  self = @
-
-  @.init = ->
-    self.drawMap()
-    self.viewDidResize()
-    self.setupBayeuxHandler()
+  constructor: ->
+    @drawMap()
+    @viewDidResize()
+    @setupBayeuxHandler()
     return @
 
-  @.setupBayeuxHandler = ->
-    self = @
-    $.getJSON "/config.json", (config) ->
-      self.client = new Faye.Client 'http://' + window.location.hostname + ':' + config.port + '/faye', timeout: 120
-      self.client.subscribe '/stat', (message) ->
-        self.drawMarker message
+  setupBayeuxHandler: ->
+    $.getJSON "/config.json", (config) =>
+      @client = new Faye.Client 'http://' + window.location.hostname + ':' + config.port + '/faye', timeout: 120
+      @client.subscribe '/stat', (message) =>
+        @drawMarker message
 
-  @.viewDidResize = ->
-    self = @
+  viewDidResize: ->
     width = $('body').width()
     windowHeight = $(window).height()
     mapCanvasHeight = width * (369.0 / 567.0)
-    self.map.setSize width, mapCanvasHeight
+    @map.setSize width, mapCanvasHeight
     $('#map').css
       'margin-top': (windowHeight - mapCanvasHeight) / 2.0
 
-  @.drawMap = ->
-    self = @
-    self.map = Raphael 'map', 0, 0 
-    self.map.canvas.setAttribute 'viewBox', '0 0 567 369'
+  drawMap: ->
+    @map = Raphael 'map', 0, 0
+    @map.canvas.setAttribute 'viewBox', '0 0 567 369'
 
-    self.map.path(mapPath).attr(
+    @map.path(mapPath).attr(
       stroke: 'black'
       fill: '#222'
     ).attr(
       'stroke-width': 0.7
     )
 
-  @.geoCoordsToMapCoords = (latitude, longitude) ->
+  geoCoordsToMapCoords: (latitude, longitude) ->
     latitude = parseFloat latitude
     longitude = parseFloat longitude
 
@@ -60,8 +55,7 @@ LiveStatsClient = ->
       yRaw: y
     }
 
-  @.drawMarker = (message) ->
-    self = @
+  drawMarker: (message) ->
     latitude = message.latitude
     longitude = message.longitude
     text = message.title
@@ -71,7 +65,7 @@ LiveStatsClient = ->
     x = mapCoords.x
     y = mapCoords.y
 
-    person = self.map.path personPath
+    person = @map.path personPath
     person.scale 0.01, 0.01
     person.translate -255, -255 # Reset location to 0,0
     person.translate x, y
@@ -79,13 +73,13 @@ LiveStatsClient = ->
       fill: '#ff9'
       stroke: 'transparent'
 
-    title = self.map.text x, y + 11, text
+    title = @map.text x, y + 11, text
     title.attr
       fill: 'white'
       "font-size": 10
       "font-family": "'Helvetica Neue', 'Helvetica', sans-serif"
       'font-weight': 'bold'
-    subtitle = self.map.text x, y + 21, city
+    subtitle = @map.text x, y + 21, city
     subtitle.attr
       fill: '#999'
       "font-size": 7
@@ -110,8 +104,6 @@ LiveStatsClient = ->
       2000, 'elastic', ->
         $(title.node).fadeOut 5000
         $(subtitle.node).fadeOut 5000
-
-  @.init()
 
 jQuery -> 
   liveStatsClient = new LiveStatsClient()
